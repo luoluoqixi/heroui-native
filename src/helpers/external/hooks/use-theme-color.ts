@@ -25,15 +25,15 @@ let webColorProbe: BrowserProbeElement | undefined;
 
 function getWebColorProbe(): BrowserProbeElement | undefined {
   const browser = globalThis as BrowserGlobals;
-  const host = browser.document?.body ?? browser.document?.documentElement;
-  const createElement = browser.document?.createElement;
+  const document = browser.document;
+  const host = document?.body ?? document?.documentElement;
 
-  if (!host || !createElement) {
+  if (!host || !document?.createElement) {
     return undefined;
   }
 
   if (!webColorProbe) {
-    const probe = createElement('div');
+    const probe = document.createElement('div');
     const { style } = probe;
 
     style.position = 'absolute';

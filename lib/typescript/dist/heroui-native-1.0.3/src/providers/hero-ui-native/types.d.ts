@@ -41,6 +41,7 @@ export interface HeroUINativeConfig extends TextComponentContextValue {
      * When set to 'disable-all', all animations across the application will be disabled.
      */
     animation?: AnimationRootDisableAll;
+    forceEnableAnimation?: boolean;
     /**
      * Toast configuration
      *

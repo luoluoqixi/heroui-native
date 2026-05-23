@@ -8,11 +8,12 @@ export interface GlobalAnimationSettingsProviderProps {
      * Global animation setting
      * When set to 'disable-all', all animations across the app will be disabled
      */
-    animation?: AnimationRootDisableAll | 'force-enable';
+    animation?: AnimationRootDisableAll;
     /**
      * Child components to render within the provider
      */
     children: ReactNode;
+    forceEnableAnimation?: boolean;
 }
 /**
  * Context value for global animation settings
