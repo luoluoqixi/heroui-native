@@ -23,6 +23,12 @@ const releaseRepoDir = path.join(distDir, branchName);
 const releaseExtractDir = path.join(distDir, `${branchName}-extract`);
 const npmPs1Path = path.join(path.dirname(process.execPath), 'npm.ps1');
 
+function parseOptions(argv) {
+  return {
+    packOnly: argv.includes('--pack-only') || argv.includes('--no-commit'),
+  };
+}
+
 function run(command, args, options = {}) {
   const result = spawnSync(command, args, {
     cwd: repoRoot,
@@ -430,9 +436,8 @@ function updateLocalBranchFromTempRepo(tempRepoDir) {
 }
 
 function main() {
+  const options = parseOptions(process.argv.slice(2));
   const startingBranch = currentBranch(repoRoot);
-  const pushRemote = preferredPushRemote();
-  const pushRemoteUrl = preferredPushRemoteUrl(pushRemote);
 
   if (startingBranch === branchName) {
     console.error(
@@ -442,7 +447,29 @@ function main() {
   }
 
   try {
+    if (options.packOnly) {
+      console.log(
+        'Pack-only mode enabled; the script will build the tarball without creating a release commit.'
+      );
+    }
+
     buildTarball();
+
+    if (options.packOnly) {
+      const endingBranch = currentBranch(repoRoot);
+      if (endingBranch !== startingBranch) {
+        throw new Error('Current workspace branch changed unexpectedly.');
+      }
+
+      console.log('Done.');
+      console.log(`Current branch: ${endingBranch || '(detached HEAD)'}`);
+      console.log(`Tarball: ${tarballPath}`);
+      console.log('Skipped release commit and local release branch update.');
+      return;
+    }
+
+    const pushRemote = preferredPushRemote();
+    const pushRemoteUrl = preferredPushRemoteUrl(pushRemote);
     const tempRepoDir = createReleaseBranchInDistRepo(
       pushRemote,
       pushRemoteUrl
