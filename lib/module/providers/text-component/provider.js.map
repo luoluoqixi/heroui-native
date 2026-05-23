@@ -1,0 +1,1 @@
+{"version":3,"names":["createContext","TextComponentProvider","useTextComponent","name"],"sourceRoot":"..\\..\\..\\..\\src","sources":["providers/text-component/provider.tsx"],"mappings":";;AAAA,SAASA,aAAa,QAAQ,uCAA8B;AAG5D,MAAM,CAACC,qBAAqB,EAAEC,gBAAgB,CAAC,GAC7CF,aAAa,CAA4B;EACvCG,IAAI,EAAE;AACR,CAAC,CAAC;AAEJ,SAASF,qBAAqB,EAAEC,gBAAgB","ignoreList":[]}

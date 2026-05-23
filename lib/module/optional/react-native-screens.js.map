@@ -1,0 +1,1 @@
+{"version":3,"names":["ReactNativeScreensPackage","require","_error"],"sourceRoot":"..\\..\\..\\src","sources":["optional/react-native-screens.ts"],"mappings":";;AAAA,IAAIA,yBAA8B;AAElC,IAAI;EACFA,yBAAyB,GAAGC,OAAO,CAAC,sBAAsB,CAAC;AAC7D,CAAC,CAAC,OAAOC,MAAM,EAAE;EACf;AAAA;AAGF,eAAeF,yBAAyB","ignoreList":[]}

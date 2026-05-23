@@ -1,0 +1,1 @@
+{"version":3,"names":["DISPLAY_NAME","LABEL_ROOT","LABEL_TEXT"],"sourceRoot":"..\\..\\..\\..\\src","sources":["components/label/label.constants.ts"],"mappings":";;AAAA;AACA;AACA;AACA,OAAO,MAAMA,YAAY,GAAG;EAC1BC,UAAU,EAAE,yBAAyB;EACrCC,UAAU,EAAE;AACd,CAAU","ignoreList":[]}

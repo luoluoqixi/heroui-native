@@ -1,0 +1,1 @@
+{"version":3,"names":["DISPLAY_NAME","CHECKBOX_ROOT","CHECKBOX_INDICATOR","DEFAULT_HIT_SLOP"],"sourceRoot":"..\\..\\..\\..\\src","sources":["components/checkbox/checkbox.constants.ts"],"mappings":";;AAAA,OAAO,MAAMA,YAAY,GAAG;EAC1BC,aAAa,EAAE,4BAA4B;EAC3CC,kBAAkB,EAAE;AACtB,CAAU;AAEV,OAAO,MAAMC,gBAAgB,GAAG,CAAC","ignoreList":[]}

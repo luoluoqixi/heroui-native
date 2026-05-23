@@ -1,0 +1,1 @@
+{"version":3,"names":["default","Tabs","useTabs","useTabsMeasurements","useTabsTrigger","tabsClassNames"],"sourceRoot":"..\\..\\..\\..\\src","sources":["components/tabs/index.ts"],"mappings":";;AAAA,SACEA,OAAO,IAAIC,IAAI,EACfC,OAAO,EACPC,mBAAmB,EACnBC,cAAc,QACT,WAAQ;AACf,SAASC,cAAc,QAAQ,kBAAe","ignoreList":[]}

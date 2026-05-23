@@ -1,0 +1,1 @@
+{"version":3,"names":["DISPLAY_NAME","SKELETON_GROUP_ROOT","SKELETON_GROUP_ITEM"],"sourceRoot":"..\\..\\..\\..\\src","sources":["components/skeleton-group/skeleton-group.constants.ts"],"mappings":";;AAAA;AACA;AACA;AACA,OAAO,MAAMA,YAAY,GAAG;EAC1BC,mBAAmB,EAAE,iCAAiC;EACtDC,mBAAmB,EAAE;AACvB,CAAC","ignoreList":[]}

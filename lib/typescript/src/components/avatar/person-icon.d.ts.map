@@ -1,0 +1,1 @@
+{"version":3,"file":"person-icon.d.ts","sourceRoot":"","sources":["../../../../../src/components/avatar/person-icon.tsx"],"names":[],"mappings":"AAAA,OAAO,KAAK,MAAM,OAAO,CAAC;AAG1B,MAAM,WAAW,eAAe;IAC9B,IAAI,CAAC,EAAE,MAAM,CAAC;IACd,KAAK,CAAC,EAAE,MAAM,CAAC;CAChB;AAED,eAAO,MAAM,UAAU,EAAE,KAAK,CAAC,EAAE,CAAC,eAAe,CAchD,CAAC"}

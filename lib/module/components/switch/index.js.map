@@ -1,0 +1,1 @@
+{"version":3,"names":["default","Switch","useSwitch","switchClassNames"],"sourceRoot":"..\\..\\..\\..\\src","sources":["components/switch/index.ts"],"mappings":";;AAAA,SAASA,OAAO,IAAIC,MAAM,EAAEC,SAAS,QAAQ,aAAU;AACvD,SAASC,gBAAgB,QAAQ,oBAAiB;AAClD,cAAc,mBAAgB","ignoreList":[]}

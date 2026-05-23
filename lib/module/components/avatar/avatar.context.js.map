@@ -1,0 +1,1 @@
+{"version":3,"names":["createContext","AvatarProvider","useInnerAvatarContext","name"],"sourceRoot":"..\\..\\..\\..\\src","sources":["components/avatar/avatar.context.ts"],"mappings":";;AAAA,SAASA,aAAa,QAAQ,uCAA8B;AAG5D;AACA;AACA;AACA;AACA,OAAO,MAAM,CAACC,cAAc,EAAEC,qBAAqB,CAAC,GAClDF,aAAa,CAAqB;EAChCG,IAAI,EAAE;AACR,CAAC,CAAC","ignoreList":[]}

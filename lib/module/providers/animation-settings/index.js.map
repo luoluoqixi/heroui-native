@@ -1,0 +1,1 @@
+{"version":3,"names":["default","GlobalAnimationSettingsProvider","useGlobalAnimationSettings"],"sourceRoot":"..\\..\\..\\..\\src","sources":["providers/animation-settings/index.ts"],"mappings":";;AAAA,SACEA,OAAO,IAAIC,+BAA+B,EAC1CC,0BAA0B,QACrB,eAAY","ignoreList":[]}

@@ -1,0 +1,1 @@
+{"version":3,"names":["DISPLAY_NAME","CONTROL_FIELD","CONTROL_FIELD_INDICATOR"],"sourceRoot":"..\\..\\..\\..\\src","sources":["components/control-field/control-field.constants.ts"],"mappings":";;AAAA;AACA;AACA;AACA,OAAO,MAAMA,YAAY,GAAG;EAC1BC,aAAa,EAAE,2BAA2B;EAC1CC,uBAAuB,EAAE;AAC3B,CAAU","ignoreList":[]}

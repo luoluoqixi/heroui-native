@@ -1,0 +1,1 @@
+{"version":3,"names":["GorhomBottomSheetPackage","require","_error"],"sourceRoot":"..\\..\\..\\src","sources":["optional/gorhom-bottom-sheet.ts"],"mappings":";;AAAA,IAAIA,wBAA6B;AAEjC,IAAI;EACFA,wBAAwB,GAAGC,OAAO,CAAC,sBAAsB,CAAC;AAC5D,CAAC,CAAC,OAAOC,MAAM,EAAE;EACf;AAAA;AAGF,eAAeF,wBAAwB","ignoreList":[]}

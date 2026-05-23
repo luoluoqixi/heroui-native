@@ -1,0 +1,1 @@
+{"version":3,"names":["createContext","DialogAnimationProvider","useDialogAnimation","name"],"sourceRoot":"..\\..\\..\\..\\src","sources":["components/dialog/dialog.animation.ts"],"mappings":";;AAAA,SAASA,aAAa,QAAQ,uCAA8B;AAG5D,MAAM,CAACC,uBAAuB,EAAEC,kBAAkB,CAAC,GACjDF,aAAa,CAA8B;EACzCG,IAAI,EAAE;AACR,CAAC,CAAC;AAEJ,SAASF,uBAAuB,EAAEC,kBAAkB","ignoreList":[]}
