@@ -8,7 +8,7 @@ export interface GlobalAnimationSettingsProviderProps {
      * Global animation setting
      * When set to 'disable-all', all animations across the app will be disabled
      */
-    animation?: AnimationRootDisableAll;
+    animation?: AnimationRootDisableAll | 'force-enable';
     /**
      * Child components to render within the provider
      */
