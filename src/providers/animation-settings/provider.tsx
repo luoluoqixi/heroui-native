@@ -32,11 +32,10 @@ export { useGlobalAnimationSettings };
  */
 export const GlobalAnimationSettingsProviderComponent: React.FC<
   GlobalAnimationSettingsProviderProps
-> = ({ animation, children }) => {
+> = ({ animation, children, forceEnableAnimation }) => {
   const reducedMotion = useReducedMotion();
   const globalIsAllAnimationsDisabled =
-    animation === 'disable-all' ||
-    (animation !== 'force-enable' && reducedMotion);
+    animation === 'disable-all' || (!forceEnableAnimation && reducedMotion);
 
   return (
     <GlobalAnimationSettingsProvider value={{ globalIsAllAnimationsDisabled }}>
