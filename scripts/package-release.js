@@ -113,6 +113,48 @@ function branchExists(cwd, name) {
   return result.status === 0;
 }
 
+function refExists(cwd, refName) {
+  const result = spawnSync(
+    'git',
+    ['show-ref', '--verify', '--quiet', refName],
+    {
+      cwd,
+      stdio: 'ignore',
+      shell: false,
+    }
+  );
+
+  return result.status === 0;
+}
+
+function isAncestor(cwd, ancestorRef, descendantRef) {
+  const result = spawnSync(
+    'git',
+    ['merge-base', '--is-ancestor', ancestorRef, descendantRef],
+    {
+      cwd,
+      stdio: 'ignore',
+      shell: false,
+    }
+  );
+
+  if (result.status === 0) {
+    return true;
+  }
+
+  if (result.status === 1) {
+    return false;
+  }
+
+  if (result.error) {
+    throw result.error;
+  }
+
+  throw new Error(
+    `git merge-base --is-ancestor ${ancestorRef} ${descendantRef} failed`
+  );
+}
+
 function clearDirectory(dirPath) {
   fs.rmSync(dirPath, { recursive: true, force: true });
   fs.mkdirSync(dirPath, { recursive: true });
@@ -140,6 +182,56 @@ function ensureGitIdentity(cwd) {
   );
 }
 
+function ensureGitRemote(cwd, remoteName, remoteUrl) {
+  if (!remoteName || !remoteUrl) {
+    return;
+  }
+
+  const existingRemoteUrl = tryRunCapture(
+    'git',
+    ['remote', 'get-url', remoteName],
+    {
+      cwd,
+    }
+  );
+
+  if (!existingRemoteUrl) {
+    run('git', ['remote', 'add', remoteName, remoteUrl], { cwd });
+    return;
+  }
+
+  if (existingRemoteUrl !== remoteUrl) {
+    run('git', ['remote', 'set-url', remoteName, remoteUrl], { cwd });
+  }
+}
+
+function fetchReleaseRef(cwd, remoteName) {
+  const result = spawnSync(
+    'git',
+    [
+      'fetch',
+      '--prune',
+      remoteName,
+      `refs/heads/${branchName}:refs/remotes/${remoteName}/${branchName}`,
+    ],
+    {
+      cwd,
+      stdio: 'ignore',
+      shell: false,
+    }
+  );
+
+  return result.status === 0;
+}
+
+function preferredPushRemoteUrl(remoteName) {
+  if (!remoteName) {
+    return '';
+  }
+
+  return tryRunCapture('git', ['remote', 'get-url', remoteName]);
+}
+
 function ensureReleaseRepo() {
   const gitDirPath = path.join(releaseRepoDir, '.git');
 
@@ -156,20 +248,83 @@ function ensureReleaseRepo() {
   ensureGitIdentity(releaseRepoDir);
 }
 
-function resetReleaseRepoBranch() {
+function resolveReleaseBaseRef(publishRemoteName) {
+  const localBaseRef = refExists(
+    releaseRepoDir,
+    `refs/remotes/origin/${branchName}`
+  )
+    ? `origin/${branchName}`
+    : '';
+  const publishBaseRef =
+    publishRemoteName &&
+    refExists(releaseRepoDir, `refs/remotes/${publishRemoteName}/${branchName}`)
+      ? `${publishRemoteName}/${branchName}`
+      : '';
+
+  if (localBaseRef && publishBaseRef) {
+    if (isAncestor(releaseRepoDir, publishBaseRef, localBaseRef)) {
+      return localBaseRef;
+    }
+
+    return publishBaseRef;
+  }
+
+  if (localBaseRef) {
+    return localBaseRef;
+  }
+
+  if (publishBaseRef) {
+    return publishBaseRef;
+  }
+
+  if (branchExists(releaseRepoDir, branchName)) {
+    return branchName;
+  }
+
+  return '';
+}
+
+function resetReleaseRepoBranch(baseRef) {
   const activeBranch = currentBranch(releaseRepoDir);
 
   if (activeBranch === branchName) {
     run('git', ['switch', '--detach'], { cwd: releaseRepoDir });
   }
 
-  if (branchExists(releaseRepoDir, branchName)) {
-    run('git', ['branch', '-D', branchName], { cwd: releaseRepoDir });
+  if (baseRef) {
+    run('git', ['switch', '-C', branchName, baseRef], { cwd: releaseRepoDir });
+  } else {
+    if (branchExists(releaseRepoDir, branchName)) {
+      run('git', ['branch', '-D', branchName], { cwd: releaseRepoDir });
+    }
+
+    run('git', ['switch', '--orphan', branchName], { cwd: releaseRepoDir });
   }
 
-  run('git', ['switch', '--orphan', branchName], { cwd: releaseRepoDir });
   run('git', ['rm', '-rf', '.', '--ignore-unmatch'], { cwd: releaseRepoDir });
   run('git', ['clean', '-fdx'], { cwd: releaseRepoDir });
+}
+
+function hasStagedChanges(cwd) {
+  const result = spawnSync('git', ['diff', '--cached', '--quiet'], {
+    cwd,
+    stdio: 'ignore',
+    shell: false,
+  });
+
+  if (result.error) {
+    throw result.error;
+  }
+
+  if (result.status === 0) {
+    return false;
+  }
+
+  if (result.status === 1) {
+    return true;
+  }
+
+  throw new Error('git diff --cached --quiet failed');
 }
 
 function preferredPushRemote() {
@@ -215,11 +370,21 @@ function buildTarball() {
   }
 }
 
-function createReleaseBranchInDistRepo() {
+function createReleaseBranchInDistRepo(pushRemoteName, pushRemoteUrl) {
   console.log('[6/7] Creating release commit in the dist workspace...');
   clearDirectory(releaseExtractDir);
   ensureReleaseRepo();
-  resetReleaseRepoBranch();
+
+  run('git', ['fetch', '--prune', 'origin'], { cwd: releaseRepoDir });
+
+  const publishRemoteName = pushRemoteName ? 'publish' : '';
+  if (publishRemoteName && pushRemoteUrl) {
+    ensureGitRemote(releaseRepoDir, publishRemoteName, pushRemoteUrl);
+    fetchReleaseRef(releaseRepoDir, publishRemoteName);
+  }
+
+  const baseRef = resolveReleaseBaseRef(publishRemoteName);
+  resetReleaseRepoBranch(baseRef);
 
   run('tar', ['-xzf', tarballPath, '-C', releaseExtractDir], {
     cwd: distDir,
@@ -234,9 +399,16 @@ function createReleaseBranchInDistRepo() {
 
   copyDirectoryContents(extractedPackageDir, releaseRepoDir);
   run('git', ['add', '-A'], { cwd: releaseRepoDir });
-  run('git', ['commit', '-m', `chore(release): ${branchName}`], {
-    cwd: releaseRepoDir,
-  });
+
+  if (hasStagedChanges(releaseRepoDir)) {
+    run('git', ['commit', '-m', `chore(release): ${branchName}`], {
+      cwd: releaseRepoDir,
+    });
+  } else {
+    console.log(
+      'No package changes detected; reusing the existing release commit.'
+    );
+  }
 
   fs.rmSync(releaseExtractDir, { recursive: true, force: true });
 
@@ -260,6 +432,7 @@ function updateLocalBranchFromTempRepo(tempRepoDir) {
 function main() {
   const startingBranch = currentBranch(repoRoot);
   const pushRemote = preferredPushRemote();
+  const pushRemoteUrl = preferredPushRemoteUrl(pushRemote);
 
   if (startingBranch === branchName) {
     console.error(
@@ -270,7 +443,10 @@ function main() {
 
   try {
     buildTarball();
-    const tempRepoDir = createReleaseBranchInDistRepo();
+    const tempRepoDir = createReleaseBranchInDistRepo(
+      pushRemote,
+      pushRemoteUrl
+    );
     updateLocalBranchFromTempRepo(tempRepoDir);
 
     const endingBranch = currentBranch(repoRoot);
