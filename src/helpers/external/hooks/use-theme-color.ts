@@ -1,5 +1,82 @@
 import { useCSSVariable } from 'uniwind';
 
+type BrowserStyleHost = {
+  appendChild: (element: unknown) => void;
+};
+
+type BrowserProbeElement = {
+  style: Record<string, string>;
+};
+
+type BrowserGlobals = {
+  document?: {
+    body?: BrowserStyleHost;
+    documentElement?: BrowserStyleHost;
+    createElement?: (tagName: string) => BrowserProbeElement;
+  };
+  window?: {
+    getComputedStyle?: (element: unknown) => {
+      color?: unknown;
+    };
+  };
+};
+
+let webColorProbe: BrowserProbeElement | undefined;
+
+function getWebColorProbe(): BrowserProbeElement | undefined {
+  const browser = globalThis as BrowserGlobals;
+  const host = browser.document?.body ?? browser.document?.documentElement;
+  const createElement = browser.document?.createElement;
+
+  if (!host || !createElement) {
+    return undefined;
+  }
+
+  if (!webColorProbe) {
+    const probe = createElement('div');
+    const { style } = probe;
+
+    style.position = 'absolute';
+    style.visibility = 'hidden';
+    style.pointerEvents = 'none';
+    style.opacity = '0';
+    style.color = 'transparent';
+
+    host.appendChild(probe);
+    webColorProbe = probe;
+  }
+
+  return webColorProbe;
+}
+
+function resolveBrowserColorValue(color: string): string {
+  if (color.trim().length === 0) {
+    return color;
+  }
+
+  const browser = globalThis as BrowserGlobals;
+  const probe = getWebColorProbe();
+
+  if (!probe || !browser.window?.getComputedStyle) {
+    return color;
+  }
+
+  const { style } = probe;
+
+  style.color = '';
+  style.color = color;
+
+  if (style.color.length === 0) {
+    return color;
+  }
+
+  const computedColor = browser.window.getComputedStyle(probe).color;
+
+  return typeof computedColor === 'string' && computedColor.length > 0
+    ? computedColor
+    : color;
+}
+
 /**
  * Unique brand symbol used to prevent accidental array destructuring of a
  * single theme color value returned from `useThemeColor`.
@@ -154,7 +231,7 @@ export function useThemeColor(
 
   const processedColors: string[] = resolvedColors.map((color) => {
     if (typeof color === 'string') {
-      return color;
+      return resolveBrowserColorValue(color);
     }
     if (typeof color === 'number') {
       return String(color);
