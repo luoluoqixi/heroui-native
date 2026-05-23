@@ -8,6 +8,33 @@ type BrowserProbeElement = {
   style: Record<string, string>;
 };
 
+type BrowserCanvasImageData = {
+  data: {
+    [index: number]: number | undefined;
+  };
+};
+
+type BrowserCanvasContext = {
+  clearRect: (x: number, y: number, width: number, height: number) => void;
+  fillRect: (x: number, y: number, width: number, height: number) => void;
+  getImageData: (
+    x: number,
+    y: number,
+    width: number,
+    height: number
+  ) => BrowserCanvasImageData;
+  fillStyle: string;
+};
+
+type BrowserCanvasElement = {
+  width: number;
+  height: number;
+  getContext: (
+    contextId: '2d',
+    options?: { willReadFrequently?: boolean }
+  ) => BrowserCanvasContext | null;
+};
+
 type BrowserGlobals = {
   document?: {
     body?: BrowserStyleHost;
@@ -22,6 +49,7 @@ type BrowserGlobals = {
 };
 
 let webColorProbe: BrowserProbeElement | undefined;
+let webColorCanvasContext: BrowserCanvasContext | undefined;
 
 function getWebColorProbe(): BrowserProbeElement | undefined {
   const browser = globalThis as BrowserGlobals;
@@ -49,6 +77,56 @@ function getWebColorProbe(): BrowserProbeElement | undefined {
   return webColorProbe;
 }
 
+function getWebColorCanvasContext(): BrowserCanvasContext | undefined {
+  const browser = globalThis as BrowserGlobals;
+  const document = browser.document;
+
+  if (!document?.createElement) {
+    return undefined;
+  }
+
+  if (!webColorCanvasContext) {
+    const canvas = document.createElement(
+      'canvas'
+    ) as unknown as BrowserCanvasElement;
+
+    canvas.width = 1;
+    canvas.height = 1;
+
+    webColorCanvasContext =
+      canvas.getContext('2d', { willReadFrequently: true }) ?? undefined;
+  }
+
+  return webColorCanvasContext;
+}
+
+function serializeBrowserColorValue(color: string): string {
+  const context = getWebColorCanvasContext();
+
+  if (!context) {
+    return color;
+  }
+
+  context.clearRect(0, 0, 1, 1);
+  context.fillStyle = '#000000';
+  context.fillStyle = color;
+  context.fillRect(0, 0, 1, 1);
+
+  const imageData = context.getImageData(0, 0, 1, 1).data;
+  const red = imageData[0] ?? 0;
+  const green = imageData[1] ?? 0;
+  const blue = imageData[2] ?? 0;
+  const alphaChannel = imageData[3] ?? 255;
+
+  if (alphaChannel === 255) {
+    return `rgb(${red}, ${green}, ${blue})`;
+  }
+
+  const alpha = Number((alphaChannel / 255).toFixed(3));
+
+  return `rgba(${red}, ${green}, ${blue}, ${alpha})`;
+}
+
 function resolveBrowserColorValue(color: string): string {
   if (color.trim().length === 0) {
     return color;
@@ -73,7 +151,7 @@ function resolveBrowserColorValue(color: string): string {
   const computedColor = browser.window.getComputedStyle(probe).color;
 
   return typeof computedColor === 'string' && computedColor.length > 0
-    ? computedColor
+    ? serializeBrowserColorValue(computedColor)
     : color;
 }
 
