@@ -14,6 +14,7 @@ export interface GlobalAnimationSettingsProviderProps {
    * Child components to render within the provider
    */
   children: ReactNode;
+  forceEnableAnimation?: boolean;
 }
 
 /**

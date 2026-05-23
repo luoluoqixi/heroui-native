@@ -35,9 +35,7 @@ export type AnimationRoot<
   | 'disable-all'
   | (TConfig & { state?: 'disabled' | 'disable-all' | boolean });
 
-export type AnimationRootDisableAll =
-  | Extract<AnimationRoot, 'disable-all'>
-  | 'force-enable';
+export type AnimationRootDisableAll = Extract<AnimationRoot, 'disable-all'>;
 
 /**
  * Animation value that can be a custom config

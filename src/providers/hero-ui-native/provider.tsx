@@ -31,7 +31,7 @@ const HeroUINativeProvider: React.FC<HeroUINativeProviderProps> = ({
   children,
   config = {},
 }) => {
-  const { textProps, toast, animation, devInfo } = config;
+  const { textProps, toast, animation, devInfo, forceEnableAnimation } = config;
 
   useDevInfo(devInfo);
 
@@ -45,7 +45,10 @@ const HeroUINativeProvider: React.FC<HeroUINativeProviderProps> = ({
         Uniwind.updateInsets(insets);
       }}
     >
-      <GlobalAnimationSettingsProvider animation={animation}>
+      <GlobalAnimationSettingsProvider
+        animation={animation}
+        forceEnableAnimation={forceEnableAnimation}
+      >
         <TextComponentProvider value={{ textProps }}>
           {isToastEnabled ? (
             <ToastProvider {...toastProps}>
